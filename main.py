@@ -42,11 +42,16 @@ def recognise(input_video_path: str, output_video_path: str):
         result = CombineDetections(element_crops, nms_threshold=0.25)
 
         #Отрисовываем людей
-        box = result.detected_xyxy_list_full
+        confid = result.filtered_confidences
+        box = result.filtered_boxes
         if len(box) != 0:
-            for param in box:
+            for i in range(len(box)):
+                param = box[i]
+                confidence = confid[i]
                 cv2.rectangle(frame, (param[0], param[1]), (param[2], param[3]), (255, 0, 0), 2)
                 font = cv2.FONT_HERSHEY_COMPLEX
+                cv2.putText(frame, f"Person: {confidence:.{2}f}", (int(param[0]), int(param[1])-10), font, 1, (255, 0, 0), 2)
+
         out.write(frame)
 
         #На всякий случай выход из программы
